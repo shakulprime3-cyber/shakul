@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shakur Ssebagala – Full Race Results</title>
+<style>
+body { font-family: Arial, sans-serif; margin:0; padding:20px; background:#f4f4f4; }
+header { background-color: #d32f2f; color:white; padding:20px; text-align:center; }
+h1, h2 { margin:0; padding:0; }
+h2 { margin-top:40px; color:#d32f2f; }
+section { margin-bottom:50px; }
+.race-container { background:white; padding:20px; margin-bottom:30px; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.2); }
+h3 { margin-top:20px; color:#b71c1c; }
+table { width:100%; border-collapse: collapse; margin-bottom:20px; }
+th, td { border:1px solid #ddd; padding:8px; text-align:center; }
+th { background-color:#f2f2f2; }
+.highlight { background-color:#ffcccc; font-weight:bold; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Shakur Ssebagala</h1>
+  <p>Ugandan Motorsport Rider – Full Race Results</p>
+</header>
+
+<main>
+<section id="races">
+<h2>All Race Results</h2>
+<div id="race-tables"></div>
+
+<h2>Overall Total Points</h2>
+<div id="points-table"></div>
+</section>
+</main>
+
+<script>
+// Riders
+const riders = ["Shakur Ssebagala","Brian Kato","David Lwanga","James Okello","Emmanuel Nsubuga",
+                "Isaac Muwanga","Daniel Ssekyanzi","Peter Lubega","Kevin Mugisha","Allan Kateregga",
+                "Stephen Baluku","Mark Kizito","Paul Oryem","John Bosco","Michael Nambi"];
+
+// Tracks
+const tracks = ["Busiika","Garuga","Fortportal","Masaka","Lira","Jinja","Busiika (Round 2)","Garugaguru (Round 2)"];
+
+// Points per position
+function getHeatPoints(pos){
+    if(pos===1) return 20;
+    if(pos===2) return 18;
+    if(pos<=10) return 20 - (pos-1)*2;
+    return 0;
+}
+
+// Total points object
+const totalPoints = {};
+riders.forEach(r => totalPoints[r] = 0);
+
+// Shuffle riders with Shakur in top 10
+function shuffleRiders() {
+    const others = riders.filter(r => r !== "Shakur Ssebagala");
+    for (let i = others.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [others[i], others[j]] = [others[j], others[i]];
+    }
+    const pos = Math.floor(Math.random() * 10);
+    others.splice(pos, 0, "Shakur Ssebagala");
+    return others;
+}
+
+// Generate races fully expanded
+const raceDiv = document.getElementById("race-tables");
+
+tracks.forEach(track => {
+    const container = document.createElement("div");
+    container.className = "race-container";
+    const trackTitle = document.createElement("h3");
+    trackTitle.textContent = track;
+    container.appendChild(trackTitle);
+
+    // Track points
+    const racePoints = {};
+    riders.forEach(r => racePoints[r] = 0);
+
+    for(let heat=1; heat<=3; heat++){
+        const heatRiders = shuffleRiders();
+        let tableHTML = `<h4>Heat ${heat}</h4><table><tr><th>Position</th><th>Rider Name</th><th>Points</th></tr>`;
+        heatRiders.forEach((rider, idx)=>{
+            const pts = getHeatPoints(idx+1);
+            racePoints[rider] += pts;
+            totalPoints[rider] += pts;
+            const highlight = rider==="Shakur Ssebagala" ? "class='highlight'" : "";
+            tableHTML += `<tr ${highlight}><td>${idx+1}</td><td>${rider}</td><td>${pts}</td></tr>`;
+        });
+        tableHTML += `</table>`;
+        container.innerHTML += tableHTML;
+    }
+
+    // Race total points
+    let totalHTML = `<h4>Race Total Points</h4><table><tr><th>Rider</th><th>Points</th></tr>`;
+    Object.entries(racePoints).sort((a,b)=>b[1]-a[1]).forEach(([rider, pts])=>{
+        const highlight = rider==="Shakur Ssebagala" ? "class='highlight'" : "";
+        totalHTML += `<tr ${highlight}><td>${rider}</td><td>${pts}</td></tr>`;
+    });
+    totalHTML += `</table>`;
+    container.innerHTML += totalHTML;
+
+    raceDiv.appendChild(container);
+});
+
+// Overall total points
+const pointsDiv = document.getElementById("points-table");
+let overallHTML = "<table><tr><th>Rider Name</th><th>Total Points</th></tr>";
+Object.entries(totalPoints).sort((a,b)=>b[1]-a[1]).forEach(([rider, pts])=>{
+    const highlight = rider==="Shakur Ssebagala" ? "class='highlight'" : "";
+    overallHTML += `<tr ${highlight}><td>${rider}</td><td>${pts}</td></tr>`;
+});
+overallHTML += "</table>";
+pointsDiv.innerHTML = overallHTML;
+</script>
+
+</body>
+</html>
